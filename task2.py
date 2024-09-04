@@ -25,7 +25,7 @@ with open("dataset/choices.json","rb") as f:
     
 @lru_cache(1)
 def get_model():
-    model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L6-v2')
+    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
     return model
 
 @lru_cache(1)
@@ -93,8 +93,12 @@ def visualize_col(col:str):
     for i in range(n_labels):
         ax.text(x[n_inputs+i,0], x[n_inputs+i,1], choices[col].texts[i])
     for i in range(n_inputs):
-        ax.text(x[i,0], x[i,1], df["Description of incident"].values[i])
+        text = df["Description of incident"].values[i]
+        if len(text) > 20:
+            text = text[:20] + "..."
+        ax.text(x[i,0], x[i,1], text)
     ax.legend()
+    ax.set_axis_off()
 
 
     os.makedirs("outputs", exist_ok=True)

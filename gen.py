@@ -3,6 +3,7 @@ import random
 import pandas as pd 
 import numpy as np
 import matplotlib.pyplot as plt 
+import seaborn as sns
 from typing import List
 from datetime import datetime
 from scipy.interpolate import make_interp_spline
@@ -21,6 +22,9 @@ def gen_curve(grid:int=100, n:int=5, xlims=(0,1), ylims=(0,1)):
     x = np.linspace(xlims[0], xlims[1], grid)
     return x, spline(x)
 
+def add_noise(x, std:float=0.1):
+    return x + np.random.normal(0, std, len(x))
+
 def date_range(start_date:str="2020-01-01", 
                end_date:str="2025-01-01"
                )->List[datetime]:
@@ -30,7 +34,7 @@ def date_range(start_date:str="2020-01-01",
     datetime_list = date_range.to_pydatetime()
     return datetime_list
 
-def diff_date_input(
+def gen_diff_date_data(
     entity:int = 1,
     business:int = 1,
     team:int = 1,
@@ -46,15 +50,12 @@ def diff_date_input(
         "Business Line": [f"BL {business}"] * len(datetimes),
         "Team": [f"Team {team}"] * len(datetimes),
         "Client number":  [f"Client {client}"] * len(datetimes),
-        "Amount in CHF":gen_curve(grid=len(datetimes))[1]
+        "Amount in CHF":add_noise(gen_curve(grid=len(datetimes))[1],0.05)
     })
     return df
 
 def gen_df():
-    date, = gen_curve()
-
-
-    plt.plot(x, y)
+    sns.lineplot(data=gen_diff_date_data(), x="Date of incident", y="Amount in CHF")
     plt.show()
     pass 
 
