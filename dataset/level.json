@@ -1,0 +1,93 @@
+{
+    "Product / operation concerned":[
+        "Investment funds", 
+        "Securities operations",
+        "Currency operations",
+        "Fiduciary deposits",
+        "Credit operation",
+        "Pricing",
+        "Periodical fees",
+        "Fund transfers"
+    ],
+    "Code / type of incident (E)":[
+        "Lack of attention: Breach of procedure",
+        "Lack of attention: Incorrect codification on fees or commissions",
+        "Lack of attention: Incorrect quantity/amount",
+        "Lack of attention: Unauthorised operation, breach of investment guidelines",
+        "Misunderstanding: Incorrect order instruction",
+        "Technical failure: System failure (IT and other)",
+        "Ignorance: Duplicate operation",
+        "Disagreement: Litigation settlement"
+    ],
+    "Root_Cause":{
+        "Employees":[
+            "Lack of adequate training/competency",
+            "Accidental causes",
+            "Miscommunication"
+        ],
+        "Process failure":[
+            "Procedure/process implementation failure",
+            "Procedure/process design failure",
+            "Governance failure"
+        ],
+        "Systems":[
+            "Unavailability",
+            "Functionality issues",
+            "Misconfiguration"
+        ],
+        "External":[
+            "External error",
+            "Malice",
+            "Passive deviation of internal guidelines"
+        ]
+    },
+    "Risk Taxonomy":{
+        "Operational": {
+            "Transaction Processing and Execution": [
+                "Processing/execution failure relating to clients and products",
+                "Processing/execution failure relating to internal operations"
+            ],
+            "Information Security (including Cyber)": [
+                "Cyber attack",
+                "Leak or theft (incl. data privacy breach)"
+            ],
+            "Statutory Reporting and Tax": [
+                "Tax payment/filing failure",
+                "Trade/transaction reporting failure"
+            ]
+        },
+        "Compliance": {
+            "Investor protection": [
+                "Best execution",
+                "Investment suitability"
+            ]
+        },
+        "Financial": {
+            "Counterparty": [
+                "Credit concentration risk",
+                "Credit default risk"
+            ]
+        }
+    },
+    "Process": {
+        "Operations": [
+            "Pricing, tariffs & retrocessions",
+            "Securities & data",
+            "Tax production"
+        ],
+        "Trading": [
+            "Order execution"
+        ],
+        "Client relationship management": [
+            "Client relationship lifecycle"
+        ],
+        "Technology": [
+            "IT & cyber security",
+            "Data management"
+        ],
+        "Finance and treasury": [
+            "Financial accounting",
+            "Treasury management"
+        ]
+    }
+}

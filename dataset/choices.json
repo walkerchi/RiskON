@@ -1,0 +1,128 @@
+{
+    "Code / type of incident (E)":[
+        "Lack of attention: Breach of procedure",
+        "Lack of attention: Incorrect codification on fees or commissions",
+        "Lack of attention: Incorrect quantity/amount",
+        "Lack of attention: Unauthorised operation, breach of investment guidelines",
+        "Misunderstanding: Incorrect order instruction",
+        "Technical failure: System failure (IT and other)",
+        "Ignorance: Duplicate operation",
+        "Disagreement: Litigation settlement"
+    ],
+    "Product / operation concerned": [
+        "Investment funds", 
+        "Securities operations",
+        "Currency operations",
+        "Fiduciary deposits",
+        "Credit operation",
+        "Pricing",
+        "Periodical fees",
+        "Fund transfers",
+        "Investment"
+    ],
+    "Root_Cause_L1": [
+        "Employees",
+        "Process failure",
+        "Systems",
+        "External"
+    ],
+    "Root_Cause_L2": [
+        "Lack of adequate training/competency",
+        "Accidental causes",
+        "Miscommunication",
+        "Procedure/process implementation failure",
+        "Procedure/process design failure",
+        "Governance failure",
+        "Unavailability",
+        "Functionality issues",
+        "Misconfiguration",
+        "External error",
+        "Malice",
+        "Passive deviation of internal guidelines"
+    ],
+    "Risk Taxonomy_L1": [
+        "Operational",
+        "Compliance",
+        "Financial"
+    ],
+    "Risk Taxonomy_L2": [
+        "Transaction Processing and Execution",
+        "Information Security (including Cyber)",
+        "Statutory Reporting and Tax",
+        "Investor protection",
+        "Counterparty",
+        "Technology"
+    ],
+    "Risk Taxonomy_L3": [
+        "Processing/execution failure relating to clients and products",
+        "Processing/execution failure relating to internal operations",
+        "Processing/execution failure relating to securities and collateral",
+        "Cyber attack",
+        "Leak or theft (incl. data privacy breach)",
+        "Tax payment/filing failure",
+        "Trade/transaction reporting failure",
+        "Best execution",
+        "Investment suitability",
+        "Credit concentration risk",
+        "Credit default risk",
+        "Insufficient or inadequate IT infrastructure and system performance",
+        "Investment restrictions"
+    ],
+    "Process_L1": [
+        "Operations",
+        "Trading",
+        "Client relationship management",
+        "Technology",
+        "Finance and treasury",
+        "Cash and securities management",
+        "Investment"
+    ],
+    "Process_L2": [
+        "Pricing, tariffs & retrocessions",
+        "Securities & data",
+        "Tax production",
+        "Order execution",
+        "Client relationship lifecycle",
+        "IT & cyber security",
+        "Data management",
+        "Financial accounting",
+        "Treasury management",
+        "Pricing & tariffs",
+        "Cash transfer",
+        "Portfolio management"
+    ],
+    "Legal entity": [
+        "Entity 1", 
+        "Entity 2", 
+        "Entity 3"
+    ],
+    "Country": [
+        "Switzerland", 
+        "Luxembourg", 
+        "Singapore"
+    ],
+    "Business Line": [
+        "BL 1", 
+        "BL 2", 
+        "BL 3", 
+        "BL 4", 
+        "BL 5", 
+        "BL 6"
+    ],
+    "Team": [
+        "Team 1", 
+        "Team 2", 
+        "Team 3", 
+        "Team 4", 
+        "Team 5", 
+        "Team 6"
+    ],
+    "Client number": [
+        "Client 1", 
+        "Client 2", 
+        "Client 3", 
+        "Client 4", 
+        "Client 5", 
+        "Client 6"
+    ]
+}
