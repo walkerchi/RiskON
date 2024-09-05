@@ -8,7 +8,7 @@ start_date = "2020-01-01"
 end_date = "2025-01-01"
 noise = 0.1 # Standard deviation of the noise
 seed = 2333 # Seed for reproducibility
-color = "dodgerblue" # color for the curve find the colors here https://matplotlib.org/stable/gallery/color/named_colors.html
+color = ["dodgerblue","orangered","limegreen"] # color for the curve
 scatter_color = ["dodgerblue","orangered","limegreen"] # color for the observations
 scatter_marker = ["1","2","3"] # marker for the observations
 scatter_size = 10 # size of the observations
@@ -67,25 +67,27 @@ y = add_noise(y_trues, std=noise).T # [len(dates), n_team]
 x = x.reshape(-1, 1)
 
 # Test data (for plotting GP predictions)
-X_test = np.linspace(0, 1, len(dates)).reshape(-1, 1)
+X_test = np.linspace(0, 1, len(dates)).reshape(-1, 1).repeat(n_teams, 1)
 
 # Step 2: Define kernel and GP model
-kernel = GPy.kern.RBF(input_dim=1, variance=var, lengthscale=l)
+kernel = GPy.kern.RBF(input_dim=n_teams, variance=var, lengthscale=l)
 # gp_model = GPy.models.GPRegression(x, y, kernel)
 
 # Step 3: Set up the figure, axis, and plot element to animate
 fig, ax = plt.subplots(figsize=figsize)
 ax.set_xlim(dates[0], dates[-1])
-ax.set_ylim(ylims[0], ylims[1]*n_teams)
+ax.set_ylim(ylims[0], ylims[1])
 ax.set_xlabel("Date")
 ax.set_ylabel("Amount in CHF(Million)")
 
-line, = ax.plot([], [], lw=2, label="Mean Prediction", color=color)
-fill_between = None  # For confidence intervals
+lines = []
 observations = []
 for i in range(n_teams):
-    observations.append(ax.scatter([], [], s=scatter_size, c=scatter_color[i], marker=scatter_marker[i], label=f"Team {i} Observations"))
-observations.append(ax.scatter([], [], s=scatter_size, c=scatter_color[n_teams], marker=scatter_marker[n_teams], label=f"Observations Sum"))
+    line, = ax.plot([], [], lw=2, label=f"Team {i+1} Rrediction", color=color[i])
+    lines.append(line)
+    observation = ax.scatter([], [], s=scatter_size, c=scatter_color[i], marker=scatter_marker[i], label=f"Team {i+1} Observations")
+    observations.append(observation)
+fill_betweens = [None] * n_teams  # For confidence intervals
 
 # Set date format on x-axis
 date_format = DateFormatter("%Y-%m")
@@ -97,10 +99,11 @@ ax.legend(loc=legend_loc)
 
 # Step 4: Initialize the plot elements
 def init():
-    line.set_data([], [])
+    for line in lines:
+        line.set_data([], [])
     for observation in observations:
-        observation.set_offsets(np.c_[[], []])
-    return [line, *observations]
+        observation.set_offsets(np.c_[[],[]])
+    return [*lines, *observations]
 
 pbar = tqdm(total=len(x)-1, desc="Animating", colour="green")
 
@@ -109,7 +112,7 @@ def update(frame):
     global x, y, fill_between, color
 
     if frame == 0:
-        return [line, *observations]
+        return [*lines, *observations]
 
     # Add a new point from the true function (simulate more observations over time)
     new_x = x[:frame].repeat(n_teams, 1)
@@ -121,32 +124,32 @@ def update(frame):
 
     # Predict using the GP
     Y_pred, Y_var = gp_model.predict(X_test)
-    Y_pred = Y_pred.sum(-1)
-    Y_var  = Y_var[:,-1]
 
     # Update plot data
-    line.set_data(dates, Y_pred)
+    for i,line in enumerate(lines):
+        line.set_data(dates, Y_pred[:, i])
 
     # Remove old confidence interval if it exists
-    if fill_between:
-        fill_between.remove()
+    for fill_between in fill_betweens:
+        if fill_between:
+            fill_between.remove()
 
     # Update the confidence intervals (mean +/- 1.96 * stddev)
-    fill_between = ax.fill_between(dates, 
-                                (Y_pred - 1.96 * np.sqrt(Y_var)).flatten(), 
-                                (Y_pred + 1.96 * np.sqrt(Y_var)).flatten(), 
-                                color=color, alpha=0.3)
+    for i, fill_between in enumerate(fill_betweens):
+        fill_betweens[i] = ax.fill_between(dates, 
+                                    (Y_pred[:,i] - 1.96 * np.sqrt(Y_var[:,0])).flatten(), 
+                                    (Y_pred[:,i] + 1.96 * np.sqrt(Y_var[:,0])).flatten(), 
+                                    color=color[i], alpha=0.3)
 
     # Update observed points
-    for i in range(n_teams):
-        observations[i].set_offsets(np.c_[dates[:frame], new_y[:,i]])
-    observations[n_teams].set_offsets(np.c_[dates[:frame], new_y.sum(-1)])
+    for i,observation in enumerate(observations):
+        observation.set_offsets(np.c_[dates[:frame], new_y[:, i:i+1]])
 
     pbar.update(1)
 
-    return [line, *observations, fill_between]
+    return tuple([*lines, *observations, *fill_betweens])
 
 # Step 6: Animate the plot using FuncAnimation
 ani = FuncAnimation(fig, update, frames=len(x), init_func=init, blit=True, interval=200)
 
-ani.save("outputs/gp_animation.mp4", fps=fps, dpi=dpi)
+ani.save("outputs/gp_animation_teams.mp4", fps=fps, dpi=dpi)

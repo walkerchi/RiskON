@@ -1,7 +1,9 @@
 import os
+import re
 import json
 import numpy as np
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt 
 from tqdm import  tqdm
 from sklearn.manifold import TSNE
@@ -9,6 +11,8 @@ from functools import lru_cache
 from dataclasses import dataclass  
 from typing import Mapping
 from sentence_transformers import SentenceTransformer
+
+
 
 with open("dataset/choices.json","rb") as f:
     col2choice = json.load(f)
@@ -30,7 +34,13 @@ def get_model():
 
 @lru_cache(1)
 def get_df():
-    return pd.read_excel('dataset/RiskON Project - Risk events examples.xlsx')
+    df = pd.read_excel('dataset/RiskON Project - Risk events examples.xlsx')
+    df["Risk Taxonomy_L1"] = df["Risk Taxonomy_L1"].apply(lambda x: re.sub(r'R[\d+\.]+ - ', '', x))
+    df["Risk Taxonomy_L2"] = df["Risk Taxonomy_L2"].apply(lambda x: re.sub(r'R[\d+\.]+ - ', '', x))
+    df["Risk Taxonomy_L2"] = df["Risk Taxonomy_L2"].apply(lambda x: re.sub(r'R[\d+\.]+ ', '', x))
+    df["Risk Taxonomy_L3"] = df["Risk Taxonomy_L3"].apply(lambda x: re.sub(r'R[\d+\.]+ - ', '', x))
+    df["Product / operation concerned"] = df["Product / operation concerned"].replace("Investment", "Investment funds")
+    return df
 
 @lru_cache(1)
 def get_inputs()->np.ndarray:
@@ -75,6 +85,7 @@ def cos_sim(x, y):
 
 
 def visualize_col(col:str):
+    sns.set_style("darkgrid")
     model = get_model()
     df = get_df()
     inputs = df["Description of incident"].values
@@ -86,26 +97,61 @@ def visualize_col(col:str):
     x = np.concatenate([inputs, target], axis=0)
     tsne = TSNE(n_components=2)
     x = tsne.fit_transform(x)
+    
+    size = 250
+    lw   = 12
+
+    replacement = {
+        "When reporting to the client his quarterly fees, the document did not contain some specific fees that he has paid due to technical issues. The client has therefore asked the Bank to be reimbursed the related amounts (CHF 5'000).":
+        "...technical issues..."
+    }
 
     fig, ax = plt.subplots(figsize=(8,8))
-    ax.scatter(x[:n_inputs,0], x[:n_inputs,1], color="red", label="inputs")
-    ax.scatter(x[n_inputs:,0], x[n_inputs:,1], color="blue", label="labels")
+    ax.scatter(x[:n_inputs,0], x[:n_inputs,1], c="orange", s=size, marker="1", label="Description", linewidths=lw)
+    ax.scatter(x[n_inputs:,0], x[n_inputs:,1], c="dodgerblue", s=size, marker="2", label="Choices", linewidths=lw)
     for i in range(n_labels):
         ax.text(x[n_inputs+i,0], x[n_inputs+i,1], choices[col].texts[i])
     for i in range(n_inputs):
         text = df["Description of incident"].values[i]
-        if len(text) > 20:
+        if text in replacement:
+            text = replacement[text]
+        elif len(text) > 20:
             text = text[:20] + "..."
         ax.text(x[i,0], x[i,1], text)
-    ax.legend()
-    ax.set_axis_off()
 
+    labels = [choices[col].texts.tolist().index(x) for x in df[col].values]
+
+    for i in range(n_inputs):
+        if i == 0:
+            kwargs = {"label":"Given Data"}
+        else:
+            kwargs = {}
+        j = labels[i]
+        ax.plot([x[i,0], x[n_inputs+j,0]], [x[i,1],x[n_inputs+j,1]],
+            linestyle="--",lw = 2, color="grey", alpha=0.5, **kwargs)
+ 
+    predictions = cos_sim(inputs,target).argmax(-1) # [n, n_label]
+    # breakpoint()
+    for i in range(n_inputs):
+        if i == 0:
+            kwargs = {"label":"Prediction"}
+        else:
+            kwargs = {}
+        j = predictions[i]
+        ax.plot([x[i,0], x[n_inputs+j,0]], [x[i,1],x[n_inputs+j,1]],
+                linestyle="--",lw = 2, color="limegreen", alpha=0.5, **kwargs)
+
+    ax.legend()
+    # ax.set_axis_off()
+    # ax.axis("off")
+    ax.set_xticks([])
+    ax.set_yticks([])
 
     os.makedirs("outputs", exist_ok=True)
     fig.savefig(f'outputs/task2_{col.replace(" ","_").replace("/","_")}.png', dpi=400)
 
 def visualize_all():
-    for col in tqdm(col2choice.keys(), desc="Visualizing"):
+    for col in tqdm(col2choice.keys(), desc="Visualizing", colour="blue"):
         visualize_col(col)
 
 

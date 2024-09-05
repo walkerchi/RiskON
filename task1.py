@@ -17,8 +17,8 @@ with open("dataset/choices.json","rb") as f:
 
 @lru_cache(1)
 def get_df():
-    # df = pd.read_excel('dataset/RiskON Project - Risk events examples.xlsx')
-    df = pd.read_excel('dataset/Generated_Incident_Data_10000_Rows.xlsx')
+    df = pd.read_excel('dataset/RiskON Project - Risk events examples.xlsx')
+    # df = pd.read_excel('dataset/Generated_Incident_Data_10000_Rows.xlsx')
     df["Risk Taxonomy_L1"] = df["Risk Taxonomy_L1"].apply(lambda x: re.sub(r'R[\d+\.]+ - ', '', x))
     df["Risk Taxonomy_L2"] = df["Risk Taxonomy_L2"].apply(lambda x: re.sub(r'R[\d+\.]+ - ', '', x))
     df["Risk Taxonomy_L2"] = df["Risk Taxonomy_L2"].apply(lambda x: re.sub(r'R[\d+\.]+ ', '', x))
